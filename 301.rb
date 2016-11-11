@@ -24,7 +24,6 @@ def checkLinks(links_file)
       file.each_line do |line|
         begin
         encoded_url = URI.encode(line)
-        encoded_url.insert(0 , 'https://www.alsoug.com/')
         agent = Mechanize.new
         agent.redirect_ok = false
         page = agent.get(URI.parse(encoded_url))
