@@ -6,7 +6,14 @@ require 'open-uri'
 require 'mechanize'
 require 'colorize'
 require "csv"
+require 'pathname'
 
+def checkLogFIle()
+  checkFile = File.exist?('log.csv')
+  if checkFile == false
+    File.new("log.csv", "w")
+  end
+end
 
 def checkLinks(links_file)
   file = File::open(links_file, 'r');
@@ -38,7 +45,6 @@ def checkLinks(links_file)
 
         @newURI = URI.decode(page.uri.to_s)
         @newCode = page.code
-
         CSV.open("log.csv", "a+") do |csv|
           csv << ["#{@oldURI}", "#{@newURI}", "#{@oldCode}" , "#{@newCode}"]
         end
@@ -59,4 +65,6 @@ def checkLinks(links_file)
       end
 end
 
+
+checkLogFIle
 checkLinks("urls.txt")
