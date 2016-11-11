@@ -1,4 +1,5 @@
-**This Script is for Checking The URi for 301 Redirect status COde And bring back the redirected URI and The Status of it
+**This Script is for Checking The URi for 301 Redirect status 
+COde And bring back the redirected URI and The Status of it
 **
 _how to use_
 
