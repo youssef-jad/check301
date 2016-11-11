@@ -5,6 +5,8 @@ require 'nokogiri'
 require 'open-uri'
 require 'mechanize'
 require 'colorize'
+require "csv"
+
 
 def checkLinks(links_file)
   file = File::open(links_file, 'r');
@@ -15,23 +17,43 @@ def checkLinks(links_file)
       file.each_line do |line|
         begin
         encoded_url = URI.encode(line)
+        encoded_url.insert(0 , 'https://www.alsoug.com/')
         agent = Mechanize.new
         agent.redirect_ok = false
         page = agent.get(URI.parse(encoded_url))
-        puts "------------------------Start------------------------------"
+
+        puts "------------------------Start------------------------------ \n"
         puts  page.code.red + ' ' + URI.decode(page.uri.to_s).magenta
+
+        @oldURI = URI.decode(page.uri.to_s)
+        @oldCode = page.code
+
         agent.redirect_ok = true
         page = agent.get(URI.parse(encoded_url))
-          puts  page.code.red + ' ' + URI.decode(page.uri.to_s).magenta
-        puts "-------------------------End-----------------------------"
+
+
+        puts  page.code.red + ' ' + URI.decode(page.uri.to_s).magenta
+        puts "-------------------------End----------------------------- \n"
+
+
+        @newURI = URI.decode(page.uri.to_s)
+        @newCode = page.code
+
+        CSV.open("log.csv", "a+") do |csv|
+          csv << ["#{@oldURI}", "#{@newURI}", "#{@oldCode}" , "#{@newCode}"]
+        end
         rescue SystemExit, Interrupt
             puts ' Pressed Script Termeinate .. '
             exit
         
         rescue Exception => e
-          puts "*****************************************************"
+          puts "***************************************************** \n"
           puts URI.decode(e.to_s).colorize(:color => :white, :background => :light_black)
-          puts "*****************************************************"
+          puts "***************************************************** \n"
+
+          CSV.open("log.csv", "a+") do |csv|
+            csv << ["#{@oldURI}", "#{URI.decode(e.to_s)}", "301" , "404"]
+          end
 
         end
       end
